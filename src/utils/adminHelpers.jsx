@@ -28,6 +28,8 @@ const STATUS_MAP = {
   vip: 'purple',
   standard: 'gray',
   premium: 'gold',
+  retired: 'gray',
+  injured: 'red',
 }
 
 const STATUS_LABELS = {
@@ -54,6 +56,8 @@ const STATUS_LABELS = {
   high: 'Cao',
   medium: 'Trung bình',
   low: 'Thấp',
+  retired: 'Giải nghệ',
+  injured: 'Chấn thương',
 }
 
 export function StatusBadge({ status }) {
