@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import MainLayout from '../layouts/MainLayout'
 import AuthLayout from '../layouts/AuthLayout'
 import AdminLayout from '../layouts/AdminLayout'
+import JockeyLayout from '../layouts/JockeyLayout'
 import HomePage from '../pages/HomePage'
 import Login from '../pages/Auth/Login'
 import Register from '../pages/Auth/Register'
@@ -24,6 +25,13 @@ import PaymentManagement from '../pages/admin/Payments/PaymentManagement'
 import NotificationManagement from '../pages/admin/Notifications/NotificationManagement'
 import ReportsAnalytics from '../pages/admin/Reports/ReportsAnalytics'
 import AuditLog from '../pages/admin/AuditLog/AuditLog'
+// Jockey pages
+import JockeyDashboard from '../pages/jockey/Dashboard/JockeyDashboard'
+import Invitations from '../pages/jockey/Invitations/Invitations'
+import MyRaces from '../pages/jockey/MyRaces/MyRaces'
+import PersonalResults from '../pages/jockey/PersonalResults/PersonalResults'
+import Rankings from '../pages/jockey/Rankings/Rankings'
+import Profile from '../pages/jockey/Profile/Profile'
 import { useAuth } from '../contexts/AuthContext'
 
 function PrivateRoute({ children }) {
@@ -62,6 +70,16 @@ export default function AppRoutes() {
         <Route path="/admin/notifications" element={<NotificationManagement />} />
         <Route path="/admin/reports" element={<ReportsAnalytics />} />
         <Route path="/admin/audit-log" element={<AuditLog />} />
+      </Route>
+
+      {/* ── Jockey Portal ── */}
+      <Route element={<PrivateRoute><JockeyLayout /></PrivateRoute>}>
+        <Route path="/jockey" element={<JockeyDashboard />} />
+        <Route path="/jockey/invitations" element={<Invitations />} />
+        <Route path="/jockey/my-races" element={<MyRaces />} />
+        <Route path="/jockey/results" element={<PersonalResults />} />
+        <Route path="/jockey/rankings" element={<Rankings />} />
+        <Route path="/jockey/profile" element={<Profile />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />
