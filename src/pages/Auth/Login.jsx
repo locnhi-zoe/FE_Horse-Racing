@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 
 function getLoginErrorMessage(error) {
@@ -28,8 +28,19 @@ export default function Login() {
     setLoading(true)
 
     try {
-      await login({ email, password })
-      navigate('/')
+      const data = await login({ email, password })
+      const role = data.user?.role
+      if (role === 'ADMIN') {
+        navigate('/admin')
+      } else if (role === 'JOCKEY') {
+        navigate('/jockey')
+      } else if (role === 'REFEREE') {
+        navigate('/referee')
+      } else if (role === 'SPECTATOR') {
+        navigate('/spectator')
+      } else {
+        navigate('/')
+      }
     } catch (err) {
       setError(getLoginErrorMessage(err))
     } finally {
@@ -77,9 +88,24 @@ export default function Login() {
               className="input-field"
             />
           </div>
-          <button type="submit" className="btn btn-primary" disabled={loading}>
+          <button type="submit" className="btn btn-primary" disabled={loading} style={{ marginBottom: '14px' }}>
             {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
           </button>
+          
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', fontSize: '13px' }}>
+            <Link to="/reset-password" style={{ color: '#d4af37', textDecoration: 'none', fontWeight: '500' }}>
+              Quên mật khẩu?
+            </Link>
+            <Link to="/register" style={{ color: '#aaa', textDecoration: 'none' }}>
+              Đăng ký tài khoản
+            </Link>
+          </div>
+
+          <div style={{ marginTop: '20px', textAlign: 'center', fontSize: '13px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '14px' }}>
+            <Link to="/" style={{ color: '#d4af37', textDecoration: 'none', fontWeight: '500' }}>
+              ← Quay về trang chủ
+            </Link>
+          </div>
         </form>
       </div>
     </div>
