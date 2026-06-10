@@ -292,7 +292,6 @@ export default function HomePage() {
                   <li>Khu VIP & hospitality</li>
                 </ul>
                 <div className="featured-stats">
-                  <span className="gold-tag">Hạng Nhất</span>
                   <button type="button" className="cta-btn">
                     Đặt chỗ ngay
                   </button>
