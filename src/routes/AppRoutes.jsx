@@ -46,11 +46,11 @@ import MyRaces from '../pages/jockey/MyRaces/MyRaces'
 import PersonalResults from '../pages/jockey/PersonalResults/PersonalResults'
 import Rankings from '../pages/jockey/Rankings/Rankings'
 import Profile from '../pages/jockey/Profile/Profile'
-import { useAuth } from '../contexts/AuthContext'
+// import { useAuth } from '../contexts/AuthContext'
 
 function PrivateRoute({ children }) {
-  const { token } = useAuth()
-  return token ? children : <Navigate to="/login" replace />
+  // Bỏ ràng buộc đăng nhập cho các role
+  return children
 }
 
 export default function AppRoutes() {
