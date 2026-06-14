@@ -46,6 +46,14 @@ import MyRaces from '../pages/jockey/MyRaces/MyRaces'
 import PersonalResults from '../pages/jockey/PersonalResults/PersonalResults'
 import Rankings from '../pages/jockey/Rankings/Rankings'
 import Profile from '../pages/jockey/Profile/Profile'
+// Owner pages
+import OwnerLayout from '../layouts/OwnerLayout'
+import OwnerDashboard from '../pages/owner/Dashboard/OwnerDashboard'
+import OwnerHorses from '../pages/owner/Horses/OwnerHorses'
+import OwnerJockeys from '../pages/owner/Jockeys/OwnerJockeys'
+import OwnerRaces from '../pages/owner/Races/OwnerRaces'
+import OwnerFinances from '../pages/owner/Finances/OwnerFinances'
+import OwnerProfile from '../pages/owner/Profile/OwnerProfile'
 // import { useAuth } from '../contexts/AuthContext'
 
 function PrivateRoute({ children }) {
@@ -98,6 +106,16 @@ export default function AppRoutes() {
         <Route path="/jockey/results" element={<PersonalResults />} />
         <Route path="/jockey/rankings" element={<Rankings />} />
         <Route path="/jockey/profile" element={<Profile />} />
+      </Route>
+
+      {/* ── Owner Portal ── */}
+      <Route element={<PrivateRoute><OwnerLayout /></PrivateRoute>}>
+        <Route path="/owner" element={<OwnerDashboard />} />
+        <Route path="/owner/horses" element={<OwnerHorses />} />
+        <Route path="/owner/jockeys" element={<OwnerJockeys />} />
+        <Route path="/owner/races" element={<OwnerRaces />} />
+        <Route path="/owner/finances" element={<OwnerFinances />} />
+        <Route path="/owner/profile" element={<OwnerProfile />} />
       </Route>
 
       {/* ── Referee Portal ── */}
