@@ -1,10 +1,17 @@
 import React, { useState } from 'react'
+import { useOutletContext } from 'react-router-dom'
 import { tournaments as initialTournaments } from '../../../data/adminMockData'
 import { StatusBadge } from '../../../utils/adminHelpers'
 import './TournamentManagement.css'
 
 export default function TournamentManagement() {
   const [tournaments, setTournaments] = useState(initialTournaments)
+  const { searchQuery = '' } = useOutletContext() || {}
+
+  const filteredTournaments = tournaments.filter(t => {
+    const q = searchQuery.toLowerCase()
+    return t.name.toLowerCase().includes(q) || t.venue.toLowerCase().includes(q)
+  })
   const [showForm, setShowForm] = useState(false)
   const [editingTournament, setEditingTournament] = useState(null)
   
@@ -224,7 +231,7 @@ export default function TournamentManagement() {
               </tr>
             </thead>
             <tbody>
-              {tournaments.map((t) => (
+              {filteredTournaments.map((t) => (
                 <tr key={t.id}>
                   <td>{t.id}</td>
                   <td><strong className="tournament-name" style={{ color: '#fff' }}>{t.name}</strong></td>

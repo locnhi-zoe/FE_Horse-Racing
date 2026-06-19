@@ -19,12 +19,11 @@ function useClickOutside(ref, handler) {
   }, [ref, handler])
 }
 
-export default function AdminHeader() {
+export default function AdminHeader({ searchQuery, setSearchQuery }) {
   const { user, logout } = useAuth()
   const location = useLocation()
   const [notifOpen, setNotifOpen] = useState(false)
   const [userOpen, setUserOpen] = useState(false)
-  const [query, setQuery] = useState('')
   const notifRef = useRef(null)
   const userRef = useRef(null)
 
@@ -46,8 +45,8 @@ export default function AdminHeader() {
         <input
           className="admin-search-input"
           placeholder="Tìm nhanh: user, giải đấu, race…"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
 

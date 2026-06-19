@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
+import { useOutletContext } from 'react-router-dom'
 import { mockJockeys as initialJockeys } from '../../../data/adminMockData'
 import { StatusBadge } from '../../../utils/adminHelpers'
 import './JockeyManagement.css'
 
 export default function JockeyManagement() {
   const [jockeys, setJockeys] = useState(initialJockeys)
-  const [search, setSearch] = useState('')
+  const { searchQuery: search = '', setSearchQuery: setSearch = () => {} } = useOutletContext() || {}
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [selectedJockey, setSelectedJockey] = useState(null)
   

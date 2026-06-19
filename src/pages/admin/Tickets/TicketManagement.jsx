@@ -1,14 +1,22 @@
 import React, { useState } from 'react'
+import { useOutletContext } from 'react-router-dom'
 import { tickets } from '../../../data/adminMockData'
 import { StatusBadge, formatCurrency } from '../../../utils/adminHelpers'
 import './TicketManagement.css'
 
 export default function TicketManagement() {
   const [statusFilter, setStatusFilter] = useState('ALL')
+  const { searchQuery = '' } = useOutletContext() || {}
 
-  const filtered = statusFilter === 'ALL'
-    ? tickets
-    : tickets.filter((t) => t.paymentStatus === statusFilter)
+  const filtered = tickets.filter((t) => {
+    const matchStatus = statusFilter === 'ALL' || t.paymentStatus === statusFilter
+    const q = searchQuery.toLowerCase()
+    const matchSearch = t.buyer.toLowerCase().includes(q) ||
+                        t.email.toLowerCase().includes(q) ||
+                        t.race.toLowerCase().includes(q) ||
+                        t.id.toLowerCase().includes(q)
+    return matchStatus && matchSearch
+  })
 
   return (
     <div className="ticket-page">

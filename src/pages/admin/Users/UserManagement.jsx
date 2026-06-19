@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
+import { useOutletContext } from 'react-router-dom'
 import { users as initialUsers } from '../../../data/adminMockData'
 import { StatusBadge } from '../../../utils/adminHelpers'
 import './UserManagement.css'
 
 export default function UserManagement() {
   const [users, setUsers] = useState(initialUsers)
-  const [search, setSearch] = useState('')
+  const { searchQuery: search = '', setSearchQuery: setSearch = () => {} } = useOutletContext() || {}
   const [roleFilter, setRoleFilter] = useState('ALL')
   const [selectedUser, setSelectedUser] = useState(null)
 

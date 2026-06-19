@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useOutletContext } from 'react-router-dom'
 import { StatusBadge } from '../../../utils/adminHelpers'
 import './HorseManagement.css'
 
@@ -31,7 +32,7 @@ export default function HorseManagement() {
     return DEFAULT_HORSES
   })
 
-  const [search, setSearch] = useState('')
+  const { searchQuery: search = '', setSearchQuery: setSearch = () => {} } = useOutletContext() || {}
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [selectedHorse, setSelectedHorse] = useState(null)
   

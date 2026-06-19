@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useOutletContext } from 'react-router-dom'
 import { races as initialRaces, tournaments as initialTournaments, mockJockeys } from '../../../data/adminMockData'
 import { StatusBadge } from '../../../utils/adminHelpers'
 import './RaceManagement.css'
@@ -20,6 +21,15 @@ export default function RaceManagement() {
   const [tournaments] = useState(initialTournaments)
   const [showForm, setShowForm] = useState(false)
   const [editingRace, setEditingRace] = useState(null)
+  
+  const { searchQuery = '' } = useOutletContext() || {}
+
+  const filteredRaces = races.filter(race => {
+    const q = searchQuery.toLowerCase()
+    return race.name.toLowerCase().includes(q) || 
+           race.tournament.toLowerCase().includes(q) ||
+           race.id.toLowerCase().includes(q)
+  })
   
   // Horses list (load from localStorage if available)
   const [horsesList, setHorsesList] = useState(FALLBACK_HORSES)
@@ -341,7 +351,7 @@ export default function RaceManagement() {
       )}
 
       <div className="race-cards-grid">
-        {races.map((race) => (
+        {filteredRaces.map((race) => (
           <div key={race.id} className="admin-card race-card-item">
             <div className="race-card-top">
               <span className="race-card-id">{race.id}</span>
