@@ -9,20 +9,29 @@ export default function RefereeAssignment() {
   const [assigningRaceId, setAssigningRaceId] = useState(null)
 
   const handleAssignReferee = (raceId, refereeId) => {
-    if (!refereeId) {
-      // Unassign
-      setAssignments(assignments.map(a => 
-        a.raceId === raceId ? { ...a, referee: null, status: 'unassigned', conflict: false } : a
+    // Handle "Bỏ phân công": value is empty string OR the sentinel value 'unassign'
+    if (!refereeId || refereeId === 'unassign') {
+      // Reset assignment record to unassigned state
+      setAssignments(prev => prev.map(a =>
+        a.raceId === raceId
+          ? { ...a, referee: null, status: 'unassigned', conflict: false }
+          : a
       ))
+      // Remove raceId from every referee's assignedRaces list
+      setReferees(prev => prev.map(r => ({
+        ...r,
+        assignedRaces: r.assignedRaces.filter(id => id !== raceId)
+      })))
       setAssigningRaceId(null)
       return
     }
 
-    const selectedRef = referees.find(r => r.id === refereeId)
+    // Find the selected referee (IDs may be numeric or string, handle both)
+    const selectedRef = referees.find(r => String(r.id) === String(refereeId))
     if (!selectedRef) return
 
-    // Update assignment
-    const updated = assignments.map(a => {
+    // Update the assignment record
+    setAssignments(prev => prev.map(a => {
       if (a.raceId === raceId) {
         return {
           ...a,
@@ -32,26 +41,22 @@ export default function RefereeAssignment() {
         }
       }
       return a
-    })
+    }))
 
-    setAssignments(updated)
-
-    // Update referee assigned races in state
-    setReferees(referees.map(r => {
-      if (r.id === refereeId) {
+    // Add raceId to selected referee; remove from all others (handles re-assignment)
+    setReferees(prev => prev.map(r => {
+      if (String(r.id) === String(selectedRef.id)) {
         return { ...r, assignedRaces: Array.from(new Set([...r.assignedRaces, raceId])) }
-      } else {
-        // Remove from previous if assigned elsewhere (for single referee assignment rules)
-        return { ...r, assignedRaces: r.assignedRaces.filter(id => id !== raceId) }
       }
+      return { ...r, assignedRaces: r.assignedRaces.filter(id => id !== raceId) }
     }))
 
     setAssigningRaceId(null)
 
     if (selectedRef.conflict) {
-      alert(`⚠️ Cảnh báo: Trọng tài ${selectedRef.name} có xung đột lợi ích đối với cuộc đua này! Hệ thống đã gắn cờ cảnh báo.`);
+      alert(`⚠️ Cảnh báo: Trọng tài ${selectedRef.name} có xung đột lợi ích đối với cuộc đua này! Hệ thống đã gắn cờ cảnh báo.`)
     } else {
-      alert(`Đã phân công Trọng tài ${selectedRef.name} thành công!`);
+      alert(`Đã phân công Trọng tài ${selectedRef.name} thành công!`)
     }
   }
 
@@ -105,8 +110,8 @@ export default function RefereeAssignment() {
           </div>
           <div className="admin-card-body referee-assign-list" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {assignments.map((a) => (
-              <div 
-                key={a.raceId} 
+              <div
+                key={a.raceId}
                 className={`referee-assign-item${a.conflict ? ' referee-assign-item--conflict' : ''}`}
                 style={{
                   display: 'flex',
@@ -122,7 +127,7 @@ export default function RefereeAssignment() {
                   <strong style={{ display: 'block', color: '#fff', fontSize: '14px' }}>{a.raceName}</strong>
                   <span style={{ fontSize: '11px', color: '#666' }}>ID: {a.raceId}</span>
                 </div>
-                
+
                 <div className="referee-assign-ref" style={{ flex: 1, textAlign: 'center', fontWeight: '500', color: a.referee ? '#fff' : '#666' }}>
                   👤 {a.referee || 'Chưa phân công'}
                 </div>
@@ -145,12 +150,12 @@ export default function RefereeAssignment() {
                     ))}
                   </select>
                 ) : (
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     className="admin-btn admin-btn--outline admin-btn--sm"
                     onClick={() => setAssigningRaceId(a.raceId)}
                   >
-                    {a.referee ? 'Đổi TT' : 'Gán TT'}
+                    {a.referee ? 'Đổi TT' : 'Phân công'}
                   </button>
                 )}
               </div>
