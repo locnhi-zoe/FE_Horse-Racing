@@ -7,7 +7,7 @@ export default function PredictionManagement() {
   const [predictions, setPredictions] = useState(initialPredictions)
   const [userPredictions, setUserPredictions] = useState(initialUserPredictions)
   const [selectedRacePred, setSelectedRacePred] = useState(null)
-  
+
   // Distribute rewards modal
   const [rewardModalOpen, setRewardModalOpen] = useState(false)
   const [rewardingRace, setRewardingRace] = useState(null)
@@ -17,16 +17,21 @@ export default function PredictionManagement() {
   const candidateHorses = ['Aurelius', 'Midnight Star', 'Velvet Thunder', 'Storm Rider']
 
   const handleClosePrediction = (id) => {
-    setPredictions(predictions.map(p => 
+    setPredictions(predictions.map(p =>
       p.id === id ? { ...p, status: 'closed' } : p
     ))
     if (selectedRacePred && selectedRacePred.id === id) {
       setSelectedRacePred(prev => ({ ...prev, status: 'closed' }))
     }
-    alert('Đã đóng cổng dự đoán thành công! Người dùng không thể đặt cược thêm.');
+    alert('Đã đóng cổng dự đoán thành công! Người dùng không thể đặt cược thêm.')
   }
 
   const handleOpenRewardModal = (pred) => {
+    // Guard: only allow when status is 'closed'
+    if (pred.status !== 'closed') {
+      alert('⚠️ Không thể trả thưởng!\n\nPhiên dự đoán đang mở. Vui lòng đóng cược trước khi thực hiện trả thưởng.')
+      return
+    }
     setRewardingRace(pred)
     setWinningHorse('')
     setRewardModalOpen(true)
@@ -51,9 +56,9 @@ export default function PredictionManagement() {
     const totalWinningBets = winnersForRace.reduce((sum, w) => sum + w.amount, 0)
 
     // Update the main prediction status
-    setPredictions(predictions.map(p => 
-      p.id === rewardingRace.id 
-        ? { ...p, status: 'distributed', winner: winningHorse } 
+    setPredictions(predictions.map(p =>
+      p.id === rewardingRace.id
+        ? { ...p, status: 'distributed', winner: winningHorse }
         : p
     ))
 
@@ -79,17 +84,17 @@ export default function PredictionManagement() {
 
     setUserPredictions(updatedUserPreds)
     setRewardModalOpen(false)
-    
+
     // If selected view is the active race, update it
     if (selectedRacePred && selectedRacePred.id === rewardingRace.id) {
       setSelectedRacePred({ ...selectedRacePred, status: 'distributed', winner: winningHorse })
     }
 
-    alert(`🎉 Trả thưởng thành công!\n- Ngựa thắng: ${winningHorse}\n- Tổng quỹ đua: ${formatCurrency(racePool)}\n- 5% Quỹ chia sẻ: ${formatCurrency(rewardBudget)}\n- Số lượt trúng: ${wonCount}\n- Tổng tiền trả thưởng thực tế: ${formatCurrency(totalPayout)}`);
+    alert(`🎉 Trả thưởng thành công!\n- Ngựa thắng: ${winningHorse}\n- Tổng quỹ đua: ${formatCurrency(racePool)}\n- 5% Quỹ chia sẻ: ${formatCurrency(rewardBudget)}\n- Số lượt trúng: ${wonCount}\n- Tổng tiền trả thưởng thực tế: ${formatCurrency(totalPayout)}`)
   }
 
   // Filter user predictions for the selected race
-  const activeUserPreds = selectedRacePred 
+  const activeUserPreds = selectedRacePred
     ? userPredictions.filter(up => up.race === selectedRacePred.raceName)
     : []
 
@@ -132,6 +137,7 @@ export default function PredictionManagement() {
                     </td>
                     <td>
                       <div className="admin-table-actions" style={{ justifyContent: 'flex-end' }}>
+                        {/* Chi tiết */}
                         <button
                           type="button"
                           className="admin-btn admin-btn--ghost admin-btn--sm"
@@ -139,6 +145,8 @@ export default function PredictionManagement() {
                         >
                           Chi tiết
                         </button>
+
+                        {/* Đóng cược — only when open */}
                         {p.status === 'open' && (
                           <button
                             type="button"
@@ -148,13 +156,28 @@ export default function PredictionManagement() {
                             Đóng cược
                           </button>
                         )}
-                        {(p.status === 'closed' || p.status === 'open') && (
+
+                        {/* Trả thưởng — ONLY enabled when status === 'closed' */}
+                        {p.status === 'closed' && (
                           <button
                             type="button"
                             className="admin-btn admin-btn--gold admin-btn--sm"
                             onClick={() => handleOpenRewardModal(p)}
                           >
                             Trả thưởng
+                          </button>
+                        )}
+
+                        {/* Hint for open sessions: reward is locked, must close first */}
+                        {p.status === 'open' && (
+                          <button
+                            type="button"
+                            className="admin-btn admin-btn--ghost admin-btn--sm"
+                            disabled
+                            title="Vui lòng đóng cược trước khi trả thưởng"
+                            style={{ opacity: 0.4, cursor: 'not-allowed' }}
+                          >
+                            🔒 Trả thưởng
                           </button>
                         )}
                       </div>
@@ -197,17 +220,32 @@ export default function PredictionManagement() {
                 </div>
               </div>
 
+              {/* Status notice for open sessions */}
+              {selectedRacePred.status === 'open' && (
+                <div style={{
+                  background: 'rgba(245, 158, 11, 0.08)',
+                  border: '1px solid rgba(245, 158, 11, 0.3)',
+                  borderRadius: '8px',
+                  padding: '10px 12px',
+                  marginBottom: '12px',
+                  fontSize: '12px',
+                  color: '#f59e0b'
+                }}>
+                  ⚠️ Phiên đang mở. Cần <strong>Đóng cược</strong> trước khi có thể Trả thưởng.
+                </div>
+              )}
+
               <h5 style={{ margin: '0 0 10px 0', fontSize: '11px', textTransform: 'uppercase', color: '#d4af37', letterSpacing: '0.05em' }}>Danh sách phiếu dự đoán</h5>
-              
+
               <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '300px', paddingRight: '4px' }}>
                 {activeUserPreds.length > 0 ? (
                   activeUserPreds.map(up => (
-                    <div 
-                      key={up.id} 
-                      style={{ 
-                        background: 'rgba(0,0,0,0.15)', 
-                        padding: '10px 12px', 
-                        borderRadius: '8px', 
+                    <div
+                      key={up.id}
+                      style={{
+                        background: 'rgba(0,0,0,0.15)',
+                        padding: '10px 12px',
+                        borderRadius: '8px',
                         border: '1px solid rgba(255,255,255,0.03)',
                         fontSize: '12px'
                       }}
@@ -250,7 +288,7 @@ export default function PredictionManagement() {
         }}>
           <div className="admin-card" style={{ width: '100%', maxWidth: '450px', border: '1px solid rgba(212,175,55,0.15)' }}>
             <div className="admin-card-head">
-              <h3>Tính toán & Trả thưởng dự đoán</h3>
+              <h3>Tính toán &amp; Trả thưởng dự đoán</h3>
               <button type="button" className="admin-btn admin-btn--ghost admin-btn--sm" onClick={() => setRewardModalOpen(false)}>✕</button>
             </div>
             <form onSubmit={handleDistributeRewards} className="admin-card-body" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -265,7 +303,7 @@ export default function PredictionManagement() {
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label className="text-muted" style={{ fontSize: '11px', textTransform: 'uppercase' }}>Chọn Ngựa Chiến Thắng</label>
-                <select 
+                <select
                   required
                   className="admin-select"
                   value={winningHorse}
@@ -281,7 +319,7 @@ export default function PredictionManagement() {
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '12px' }}>
                 <button type="button" className="admin-btn admin-btn--ghost" onClick={() => setRewardModalOpen(false)}>Hủy</button>
-                <button type="submit" className="admin-btn admin-btn--gold">🚀 Tính & Trả Thưởng</button>
+                <button type="submit" className="admin-btn admin-btn--gold">🚀 Tính &amp; Trả Thưởng</button>
               </div>
             </form>
           </div>
