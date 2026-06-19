@@ -27,7 +27,16 @@ export default function PredictionManagement() {
   }
 
   const handleOpenRewardModal = (pred) => {
-    // Guard: only allow when status is 'closed'
+    // Guard 1: already distributed — hard block (idempotency)
+    if (pred.status === 'distributed') {
+      alert(
+        `🔒 Phiên "${pred.raceName}" đã được trả thưởng trước đó.\n\n` +
+        `Ngựa thắng đã ghi nhận: ${pred.winner || 'N/A'}\n` +
+        `Không thể thực hiện trả thưởng lần 2 cho cùng một phiên.`
+      )
+      return
+    }
+    // Guard 2: still open — must close first
     if (pred.status !== 'closed') {
       alert('⚠️ Không thể trả thưởng!\n\nPhiên dự đoán đang mở. Vui lòng đóng cược trước khi thực hiện trả thưởng.')
       return
@@ -39,6 +48,15 @@ export default function PredictionManagement() {
 
   const handleDistributeRewards = (e) => {
     e.preventDefault()
+
+    // Idempotency double-check: re-read current state at submit time
+    const currentPred = predictions.find(p => p.id === rewardingRace?.id)
+    if (currentPred?.status === 'distributed') {
+      alert(`🔒 Phiên "${rewardingRace.raceName}" đã được trả thưởng rồi. Thao tác bị hủy.`)
+      setRewardModalOpen(false)
+      return
+    }
+
     if (!winningHorse) {
       alert('Vui lòng chọn ngựa chiến thắng để tính toán!')
       return
@@ -168,7 +186,7 @@ export default function PredictionManagement() {
                           </button>
                         )}
 
-                        {/* Hint for open sessions: reward is locked, must close first */}
+                        {/* Hint for open sessions: reward locked, must close first */}
                         {p.status === 'open' && (
                           <button
                             type="button"
@@ -179,6 +197,28 @@ export default function PredictionManagement() {
                           >
                             🔒 Trả thưởng
                           </button>
+                        )}
+
+                        {/* Distributed: all reward actions permanently locked */}
+                        {p.status === 'distributed' && (
+                          <span
+                            title={`Đã trả thưởng cho ngựa: ${p.winner || 'N/A'}. Không thể thực hiện lại.`}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              padding: '4px 10px',
+                              fontSize: '11px',
+                              borderRadius: '6px',
+                              background: 'rgba(74, 222, 128, 0.08)',
+                              border: '1px solid rgba(74, 222, 128, 0.25)',
+                              color: '#4ade80',
+                              cursor: 'default',
+                              userSelect: 'none',
+                            }}
+                          >
+                            ✅ Đã trả thưởng
+                          </span>
                         )}
                       </div>
                     </td>
