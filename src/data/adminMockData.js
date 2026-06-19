@@ -61,9 +61,9 @@ export const referees = [
 ]
 
 export const raceAssignments = [
-  { raceId: 'R-1042', raceName: 'Derby Một Dặm', referee: 'Dr. James Wilson', status: 'assigned', conflict: false },
-  { raceId: 'R-1043', raceName: 'Đua nước rút', referee: 'Sarah Chen', status: 'conflict', conflict: true },
-  { raceId: 'R-1044', raceName: 'Cúp Nhà Vô Địch', referee: null, status: 'unassigned', conflict: false },
+  { raceId: 'R-1042', raceName: 'Derby Một Dặm', date: '2026-06-03', time: '15:10', referee: 'Dr. James Wilson', status: 'assigned', conflict: false },
+  { raceId: 'R-1043', raceName: 'Đua nước rút', date: '2026-06-03', time: '14:30', referee: 'Sarah Chen', status: 'conflict', conflict: true },
+  { raceId: 'R-1044', raceName: 'Cúp Nhà Vô Địch', date: '2026-09-12', time: '16:00', referee: null, status: 'unassigned', conflict: false },
 ]
 
 export const resultReports = [
