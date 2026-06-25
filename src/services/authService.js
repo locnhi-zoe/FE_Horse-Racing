@@ -9,6 +9,6 @@ export async function login(credentials) {
 }
 
 export async function register(payload) {
-  const res = await client.post('/auth/register', payload)
+  const res = await client.post('/register', payload)
   return res.data
 }
