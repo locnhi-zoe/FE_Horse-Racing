@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+import * as authService from '../../services/authService'
 
 export default function Register() {
   const [name, setName] = useState('')
@@ -8,9 +9,11 @@ export default function Register() {
   const [password, setPassword] = useState('')
   const [dob, setDob] = useState('')
   const [role, setRole] = useState('SPECTATOR')
+  const [phone, setPhone] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   const [showRoleForm, setShowRoleForm] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   // Jockey specific states
   const [jockeyExp, setJockeyExp] = useState('')
@@ -59,8 +62,14 @@ export default function Register() {
     e.preventDefault()
     setError('')
 
-    if (!name || !username || !email || !password || !dob || !role) {
+    if (!name || !username || !email || !phone || !password || !dob || !role) {
       setError('Vui lòng nhập đầy đủ tất cả thông tin đăng ký!')
+      return
+    }
+
+    const phoneRegex = /^[0-9]{10,11}$/
+    if (!phoneRegex.test(phone)) {
+      setError('Số điện thoại không hợp lệ (yêu cầu từ 10-11 chữ số).')
       return
     }
 
@@ -73,9 +82,37 @@ export default function Register() {
     setShowRoleForm(true)
   }
 
-  function handleRoleSubmit(e) {
+  async function handleRoleSubmit(e) {
     e.preventDefault()
-    setSuccess(true)
+    setError('')
+    setLoading(true)
+    try {
+      if (role === 'SPECTATOR') {
+        const payload = {
+          fullName: name,
+          userName: username,
+          email,
+          phone,
+          password,
+          birthDate: dob,
+          role: 'SPECTATOR',
+        }
+        const data = await authService.register(payload)
+        if (data.success || data.token || data.user) {
+          setSuccess(true)
+        } else {
+          setError(data.message || 'Đăng ký thất bại, vui lòng thử lại!')
+        }
+      } else {
+        // Simulating success for other roles for now
+        setSuccess(true)
+      }
+    } catch (err) {
+      console.error(err)
+      setError(err.response?.data?.message || err.message || 'Đăng ký thất bại, vui lòng thử lại!')
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (success) {
@@ -467,14 +504,16 @@ export default function Register() {
               </>
             )}
 
-            <button type="submit" className="btn btn-primary" style={{ marginTop: '10px' }}>
-              Hoàn tất đăng ký
+            {error && <p className="auth-error" style={{ color: '#f87171', fontSize: '13px', background: 'rgba(248,113,113,0.08)', padding: '10px', borderRadius: '6px', border: '1px solid rgba(248,113,113,0.15)', margin: '10px 0' }}>{error}</p>}
+            <button type="submit" className="btn btn-primary" style={{ marginTop: '10px' }} disabled={loading}>
+              {loading ? 'Đang đăng ký...' : 'Hoàn tất đăng ký'}
             </button>
             <button
               type="button"
               className="btn btn-secondary"
               style={{ marginTop: '5px', background: 'rgba(255,255,255,0.05)', color: '#ccc', border: '1px solid rgba(255,255,255,0.1)' }}
               onClick={() => setShowRoleForm(false)}
+              disabled={loading}
             >
               Quay lại bước trước
             </button>
@@ -534,6 +573,16 @@ export default function Register() {
               value={email}
               onChange={e => setEmail(e.target.value)}
               placeholder="Email"
+              className="input-field"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <input
+              value={phone}
+              onChange={e => setPhone(e.target.value)}
+              placeholder="Số điện thoại"
               className="input-field"
               required
             />
