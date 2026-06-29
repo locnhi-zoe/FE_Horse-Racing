@@ -12,3 +12,8 @@ export async function register(payload) {
   const res = await client.post('/register', payload)
   return res.data
 }
+
+export async function checkEmail(email) {
+  const res = await client.get(`/check-email?email=${encodeURIComponent(email)}`)
+  return res.data // expected: { exists: boolean }
+}
