@@ -87,25 +87,31 @@ export default function Register() {
     setError('')
     setLoading(true)
     try {
-      if (role === 'SPECTATOR') {
-        const payload = {
-          fullName: name,
-          userName: username,
-          email,
-          phone,
-          password,
-          birthDate: dob,
-          role: 'SPECTATOR',
-        }
-        const data = await authService.register(payload)
-        if (data.success || data.token || data.user) {
-          setSuccess(true)
-        } else {
-          setError(data.message || 'Đăng ký thất bại, vui lòng thử lại!')
-        }
-      } else {
-        // Simulating success for other roles for now
+      const payload = {
+        fullName: name,
+        userName: username,
+        email,
+        phone,
+        password,
+        birthDate: dob,
+        role: role,
+        // Mapping fields according to public class AssignRoleRequest
+        newRole: role,
+        address: (role === 'HORSE_OWNER' || role === 'HORSE OWNER') ? ownerAddress : undefined,
+        experienceYears: role === 'JOCKEY' 
+          ? (jockeyExp ? parseInt(jockeyExp, 10) : undefined) 
+          : role === 'REFEREE' 
+            ? (refereeExp ? parseInt(refereeExp, 10) : undefined) 
+            : undefined,
+        licenseNumber: role === 'JOCKEY' ? jockeyLicense : undefined,
+        certificateLevel: role === 'REFEREE' ? refereeCert : undefined,
+      }
+      
+      const data = await authService.register(payload)
+      if (data.success || data.token || data.user) {
         setSuccess(true)
+      } else {
+        setError(data.message || 'Đăng ký thất bại, vui lòng thử lại!')
       }
     } catch (err) {
       console.error(err)
