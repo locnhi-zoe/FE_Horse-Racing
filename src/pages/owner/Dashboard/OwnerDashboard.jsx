@@ -24,7 +24,7 @@ function StatCard({ stat }) {
 export default function OwnerDashboard() {
   const upcomingRace = ownerRaces.find((r) => r.status === 'pending_confirmation' || r.status === 'registered' || r.status === 'upcoming')
   const completedRacesCount = ownerRaces.filter((r) => r.status === 'completed').length
-  
+
   const chartMonths = ['T2', 'T3', 'T4', 'T5', 'T6']
   const chartEarnings = [120, 220, 180, 450, 820] // mock progression in Million VND
   const maxChart = Math.max(...chartEarnings)
