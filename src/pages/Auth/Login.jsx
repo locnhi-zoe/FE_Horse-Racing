@@ -38,7 +38,7 @@ export default function Login() {
         navigate('/referee')
       } else if (role === 'SPECTATOR') {
         navigate('/spectator')
-      } else if (role === 'OWNER') {
+      } else if (role === 'OWNER' || role === 'HORSE_OWNER' || role === 'HORSE OWNER') {
         navigate('/owner')
       } else {
         navigate('/')
