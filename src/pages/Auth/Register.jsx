@@ -112,6 +112,18 @@ export default function Register() {
         }
         const data = await authService.register(payload)
         if (data.success || data.token || data.user || data.id) {
+          // Lưu thông tin đăng ký vào localStorage để Profile đọc được ngay
+          const profileSnapshot = {
+            id:        data.id   ?? data.user?.id   ?? null,
+            userName:  username,
+            name:      name,
+            email:     email,
+            phone:     phone,
+            joined:    new Date().toISOString(),
+            balance:   0,
+            momoLinked: false,
+          }
+          localStorage.setItem('pending_profile', JSON.stringify(profileSnapshot))
           setSuccess(true)
         } else {
           setError(data.message || 'Đăng ký thất bại, vui lòng thử lại!')
@@ -155,6 +167,18 @@ export default function Register() {
       
       const data = await authService.register(payload)
       if (data.success || data.token || data.user) {
+        // Lưu thông tin đăng ký vào localStorage để Profile đọc được ngay
+        const profileSnapshot = {
+          id:        data.id   ?? data.user?.id   ?? null,
+          userName:  username,
+          name:      name,
+          email:     email,
+          phone:     phone,
+          joined:    new Date().toISOString(),
+          balance:   0,
+          momoLinked: false,
+        }
+        localStorage.setItem('pending_profile', JSON.stringify(profileSnapshot))
         setSuccess(true)
       } else {
         setError(data.message || 'Đăng ký thất bại, vui lòng thử lại!')
